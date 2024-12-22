@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# run if you want to drop the schema
+# run if you want to drop the schema along with all data
 
 # check if YTKP_DIR is set
 if [ -z "${YTKP_DIR}" ];  then
