@@ -1,16 +1,17 @@
 #!/bin/sh
 
 # check if YTKP_DIR is set
-if [ -z "${YTKP_DIR}" ] then
+if [ -z "${YTKP_DIR}" ] ; then
     echo "YTKP_DIR is not set."
     exit 1
 fi
 
-# get sorted list of all channels (URLs) from channel table. It is guaranteed to be unique
+# get a list of all channels (URLs) from channel table. It is guaranteed to be unique
 psql \
  --dbname=postgres \
  --tuples-only \
- --command="SELECT channel_url FROM ytkp.channel ORDER BY channel_url;" \
+ --no-align \
+ --command="SELECT channel_url FROM ytkp.channel;" \
  --output=${YTKP_DIR}/database/temp/db_channels.txt
 
 # sort and remove duplicates from users channel list
@@ -18,6 +19,12 @@ sort \
  --unique \
  --output=${YTKP_DIR}/channels.txt \
  ${YTKP_DIR}/channels.txt
+
+# sort and remove duplicates from databases channel list
+sort \
+ --unique \
+ --output=${YTKP_DIR}/database/temp/db_channels.txt \
+ ${YTKP_DIR}/database/temp/db_channels.txt
 
 # create a list of channels to INSERT into database
 comm \
