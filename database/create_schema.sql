@@ -5,7 +5,7 @@ CREATE SCHEMA ytkp;
 -- Create the channel table
 CREATE TABLE  ytkp.channel (
     channel_id SERIAL PRIMARY KEY,
-    channel_url VARCHAR(255) NOT NULL,
+    channel_url VARCHAR(255) UNIQUE NOT NULL,
     channel_name VARCHAR(255)
 );
 
