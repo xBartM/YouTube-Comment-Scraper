@@ -6,7 +6,8 @@ CREATE SCHEMA ytkp;
 CREATE TABLE  ytkp.channel (
     channel_id SERIAL PRIMARY KEY,
     channel_url VARCHAR(255) UNIQUE NOT NULL,
-    channel_name VARCHAR(255)
+    channel_name VARCHAR(255),
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 -- Add comments for the channel table and its columns
@@ -14,7 +15,7 @@ COMMENT ON TABLE ytkp.channel IS 'Table containing channel information';
 COMMENT ON COLUMN ytkp.channel.channel_id IS 'Unique identifier for each channel, auto-incremented';
 COMMENT ON COLUMN ytkp.channel.channel_url IS 'URL of the channel, must be provided';
 COMMENT ON COLUMN ytkp.channel.channel_name IS 'Name of the channel, derived from the channel_url';
-
+COMMENT ON COLUMN ytkp.channel.insert_date IS 'Timestamp of row insertion';
 
 -- Create the video table
 CREATE TABLE ytkp.video (
