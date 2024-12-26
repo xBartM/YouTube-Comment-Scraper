@@ -45,14 +45,26 @@ awk \
  ${YTKP_DIR}/database/temp/db_channels_delete.txt \
  > ${YTKP_DIR}/database/temp/db_channels_delete.sql
 
-# run INSERT INTO
+# run INSERT INTO if there is anything to insert
+if [ -s ${YTKP_DIR}/database/temp/db_channels_insert.sql ] ; then
+  psql \
+   --dbname=postgres \
+   --quiet \
+   --file=${YTKP_DIR}/database/temp/db_channels_insert.sql
+fi
 
-# run DELETE FROM
+# run DELETE FROM if there is anything to delete
+if [ -s ${YTKP_DIR}/database/temp/db_channels_delete.sql ] ; then
+  psql \
+   --dbname=postgres \
+   --quiet \
+   --file=${YTKP_DIR}/database/temp/db_channels_delete.sql
+fi
 
 # remove temp files
-# ${YTKP_DIR}/database/temp/db_channels.txt
-# ${YTKP_DIR}/database/temp/db_channels_insert.txt
-# ${YTKP_DIR}/database/temp/db_channels_insert.sql
-# ${YTKP_DIR}/database/temp/db_channels_delete.txt
-# ${YTKP_DIR}/database/temp/db_channels_delete.sql
+rm ${YTKP_DIR}/database/temp/db_channels.txt
+rm ${YTKP_DIR}/database/temp/db_channels_insert.txt
+rm ${YTKP_DIR}/database/temp/db_channels_insert.sql
+rm ${YTKP_DIR}/database/temp/db_channels_delete.txt
+rm ${YTKP_DIR}/database/temp/db_channels_delete.sql
 
