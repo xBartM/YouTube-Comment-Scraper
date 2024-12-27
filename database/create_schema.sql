@@ -17,7 +17,7 @@ COMMENT ON COLUMN ytkp.channel.channel_id IS 'Unique identifier for each channel
 COMMENT ON COLUMN ytkp.channel.channel_url IS 'URL of the channel, must be provided';
 COMMENT ON COLUMN ytkp.channel.channel_name IS 'Name of the channel, derived from the channel_url';
 COMMENT ON COLUMN ytkp.channel.insert_date IS 'Timestamp of row insertion';
-COMMENT ON COLUMN ytkp.channel.scrape_date IS 'Timestamp of the last time the channel was scraped for video URLs'
+COMMENT ON COLUMN ytkp.channel.scrape_date IS 'Timestamp of the last time the channel was scraped for video URLs';
 
 -- Create the video table
 CREATE TABLE ytkp.video (
