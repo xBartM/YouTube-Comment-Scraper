@@ -26,7 +26,7 @@ CREATE TABLE ytkp.video (
     video_url VARCHAR(255) NOT NULL,
     video_name VARCHAR(255),
     video_description TEXT,
-    upload_date DATE NOT NULL,
+    upload_date DATE,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     scrape_date TIMESTAMP DEFAULT '1970-01-01 00:00:00' NOT NULL
 );
