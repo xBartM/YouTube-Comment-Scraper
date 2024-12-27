@@ -23,7 +23,7 @@ COMMENT ON COLUMN ytkp.channel.scrape_date IS 'Timestamp of the last time the ch
 CREATE TABLE ytkp.video (
     video_id SERIAL PRIMARY KEY,
     channel_id INT REFERENCES ytkp.channel(channel_id),
-    video_url VARCHAR(255) NOT NULL,
+    video_url VARCHAR(255) UNIQUE NOT NULL,
     video_name VARCHAR(255),
     video_description TEXT,
     upload_date DATE,
