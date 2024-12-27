@@ -7,7 +7,8 @@ CREATE TABLE  ytkp.channel (
     channel_id SERIAL PRIMARY KEY,
     channel_url VARCHAR(255) UNIQUE NOT NULL,
     channel_name VARCHAR(255),
-    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    scrape_date TIMESTAMP DEFAULT '1970-01-01 00:00:00' NOT NULL
 );
 
 -- Add comments for the channel table and its columns
@@ -16,6 +17,7 @@ COMMENT ON COLUMN ytkp.channel.channel_id IS 'Unique identifier for each channel
 COMMENT ON COLUMN ytkp.channel.channel_url IS 'URL of the channel, must be provided';
 COMMENT ON COLUMN ytkp.channel.channel_name IS 'Name of the channel, derived from the channel_url';
 COMMENT ON COLUMN ytkp.channel.insert_date IS 'Timestamp of row insertion';
+COMMENT ON COLUMN ytkp.channel.scrape_date IS 'Timestamp of the last time the channel was scraped for video URLs'
 
 -- Create the video table
 CREATE TABLE ytkp.video (
@@ -38,7 +40,7 @@ COMMENT ON COLUMN ytkp.video.video_name IS 'Name of the video';
 COMMENT ON COLUMN ytkp.video.video_description IS 'Description of the video';
 COMMENT ON COLUMN ytkp.video.upload_date IS 'Original upload date of the video';
 COMMENT ON COLUMN ytkp.video.insert_date IS 'Timestamp of row insertion';
-COMMENT ON COLUMN ytkp.video.scrape_date IS 'Timestamp of the last time the video was scraped for data';
+COMMENT ON COLUMN ytkp.video.scrape_date IS 'Timestamp of the last time the video was scraped for data (comments, description, transcript)';
 
 
 -- Create the comment table
