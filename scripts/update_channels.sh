@@ -1,4 +1,10 @@
 #!/bin/sh
+# this script synchronizes ytkp.channel table with channels.txt file.
+# adding an entry to channels.txt and running this script will:
+# 1. sort and deduplicate channels.txt
+# 2. export URLs from ytkp.channel and sort them
+# 3. insert URLs present in channels.txt and not present in ytkp.channel into db
+# 4. delete URLs present in ytkp.channel and not present in channels.txt from db
 
 # check if YTKP_DIR is set
 if [ -z "${YTKP_DIR}" ] ; then
