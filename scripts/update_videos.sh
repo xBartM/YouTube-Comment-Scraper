@@ -10,7 +10,7 @@
 
 # check if YTKP_DIR is set
 if [ -z "${YTKP_DIR}" ] ; then
-    echo "YTKP_DIR is not set."
+    echo "${0##*/}: YTKP_DIR is not set."
     exit 1
 fi
 
@@ -23,7 +23,12 @@ db_channel=$( \
     --command="SELECT channel_url FROM ytkp.channel WHERE scrape_date < NOW() - INTERVAL '30 days' ORDER BY scrape_date ASC, insert_date ASC LIMIT 1;"
 )
 
-# --print-to-file url ${YTKP_DIR}/archive/vid_urls.txt \
+# check if there is work to do
+if [ -z "${db_channel}" ] ; then
+    echo "${0##*/}: no work to do. exitting"
+    exit 1
+fi
+
 # run yt-dlp to save URLs of all videos from the channel
 yt-dlp \
   --config-locations ${YTKP_DIR}/configs/dl-urls.conf \

@@ -8,7 +8,7 @@
 
 # check if YTKP_DIR is set
 if [ -z "${YTKP_DIR}" ] ; then
-    echo "YTKP_DIR is not set."
+    echo "${0##*/}: YTKP_DIR is not set."
     exit 1
 fi
 
