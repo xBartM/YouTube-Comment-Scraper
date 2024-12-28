@@ -40,7 +40,7 @@ yt-dlp \
 yt-dlp \
   --config-locations ${YTKP_DIR}/configs/dl-urls.conf \
   --print-to-file url ${YTKP_DIR}/archive/temp/video_urls.txt \
-  --batch-file ${YTKP_DIR}/archive/temp/playlists_urls.txt
+  --batch-file ${YTKP_DIR}/archive/temp/playlist_urls.txt
 
 # sort and remove duplicates from the list of videos
 sort \
@@ -66,7 +66,7 @@ fi
 psql \
   --dbname=postgres \
   --quiet \
-  --command="UPDATE ytkp.channel SET scrape_date = NOW(  WHERE channel_url = '${db_channel}';"
+  --command="UPDATE ytkp.channel SET scrape_date = NOW()  WHERE channel_url = '${db_channel}';"
 
 # update archival vid_urls.txt file
 cat \
