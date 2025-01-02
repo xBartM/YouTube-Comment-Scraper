@@ -71,7 +71,7 @@ fi
 psql \
   --dbname=postgres \
   --quiet \
-  --command="UPDATE ytkp.channel SET scrape_date = NOW()  WHERE channel_url = '${db_channel}';"
+  --command="UPDATE ytkp.channel SET scrape_date = NOW() WHERE channel_url = '${db_channel}';"
 
 # update archival vid_urls.txt file
 cat \
