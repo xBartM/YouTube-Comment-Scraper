@@ -6,10 +6,25 @@ CREATE SCHEMA ytkp;
 CREATE TABLE  ytkp.channel (
     channel_id SERIAL PRIMARY KEY,
     channel_url VARCHAR(255) UNIQUE NOT NULL,
-    channel_name VARCHAR(255),
+    channel_name VARCHAR(255) UNIQUE NOT NULL,
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     scrape_date TIMESTAMP DEFAULT '1970-01-01 00:00:00' NOT NULL
 );
+
+-- Create functions for triggers in the channel table
+CREATE FUNCTION ytkp.extract_channel_name_from_url() RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.channel_name := RIGHT(NEW.channel_url, -24);
+        RETURN NEW;
+    END;
+$$ LANGUAGE SQL;
+
+-- Create triggers in the vdeo table
+CREATE TRIGGER insert_channel_name
+    BEFORE INSERT
+    ON ytkp.channel
+    FOR EACH ROW
+    EXECUTE FUNCTION ytkp.extract_channel_name_from_url();
 
 -- Add comments for the channel table and its columns
 COMMENT ON TABLE ytkp.channel IS 'Table containing channel information';
@@ -18,12 +33,16 @@ COMMENT ON COLUMN ytkp.channel.channel_url IS 'URL of the channel, must be provi
 COMMENT ON COLUMN ytkp.channel.channel_name IS 'Name of the channel, derived from the channel_url';
 COMMENT ON COLUMN ytkp.channel.insert_date IS 'Timestamp of row insertion';
 COMMENT ON COLUMN ytkp.channel.scrape_date IS 'Timestamp of the last time the channel was scraped for video URLs';
+-- Add comments for functions
+COMMENT ON FUNCTION ytkp.extract_channel_name_from_url() IS 'Function for a trigger; Trim first 24 characters from video url to obtain channel name';
+-- Add comments for triggers
+COMMENT ON TRIGGER insert_yt_id ON ytkp.video IS 'Trigger to insert channel_name based on channel_url';
 
 
 -- Create the video table
 CREATE TABLE ytkp.video (
     video_id SERIAL PRIMARY KEY,
-    video_yt_id VARCHAR(255) UNIQUE,
+    video_yt_id VARCHAR(255) UNIQUE NOT NULL,
     channel_id INT REFERENCES ytkp.channel(channel_id),
     video_url VARCHAR(255) UNIQUE NOT NULL,
     video_name VARCHAR(255),
@@ -33,7 +52,7 @@ CREATE TABLE ytkp.video (
     scrape_date TIMESTAMP DEFAULT '1970-01-01 00:00:00' NOT NULL
 );
 
--- Create functions for triggers
+-- Create functions for triggers in the video table
 CREATE FUNCTION ytkp.extract_vid_id_from_url() RETURNS TRIGGER AS $$
     BEGIN
         NEW.video_yt_id := RIGHT(NEW.video_url, 11);
@@ -41,9 +60,9 @@ CREATE FUNCTION ytkp.extract_vid_id_from_url() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE SQL;
 
--- Create triggers
+-- Create triggers in the vdeo table
 CREATE TRIGGER insert_yt_id
-    BEFORE UPDATE
+    BEFORE INSERT
     ON ytkp.video
     FOR EACH ROW
     EXECUTE FUNCTION ytkp.extract_vid_id_from_url();
