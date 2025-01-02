@@ -19,7 +19,7 @@ CREATE FUNCTION ytkp.extract_channel_name_from_url() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE SQL;
 
--- Create triggers in the vdeo table
+-- Create triggers in the channel table
 CREATE TRIGGER insert_channel_name
     BEFORE INSERT
     ON ytkp.channel
@@ -60,7 +60,7 @@ CREATE FUNCTION ytkp.extract_vid_id_from_url() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE SQL;
 
--- Create triggers in the vdeo table
+-- Create triggers in the video table
 CREATE TRIGGER insert_yt_id
     BEFORE INSERT
     ON ytkp.video
