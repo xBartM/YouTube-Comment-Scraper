@@ -121,6 +121,23 @@ CREATE TABLE ytkp.comment_section (
     insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+-- Create functions for the comment_section table
+CREATE FUNCTION ytkp.find_video_id(_video_yt_id TEXT) RETURNS INT AS $$
+    DECLARE
+        _video_id INT;
+    BEGIN
+        SELECT video_id INTO _video_id
+        FROM ytkp.video
+        WHERE video_yt_id = _video_yt_id;
+
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+
+        RETURN _video_id;
+    END;
+$$ LANGUAGE plpgsql;
+
 -- Add comments for the comment table and its columns
 COMMENT ON TABLE ytkp.comment_section IS 'Table containing comments on videos';
 COMMENT ON COLUMN ytkp.comment_section.comment_id IS 'Unique identifier for each comment, auto-incremented';
@@ -135,3 +152,5 @@ COMMENT ON COLUMN ytkp.comment_section.is_favourited IS 'Flag if the comment is 
 COMMENT ON COLUMN ytkp.comment_section.is_pinned IS 'Flag if the comment is pinned by video author';
 COMMENT ON COLUMN ytkp.comment_section.comment_date IS 'Original submit date of the comment to YT service';
 COMMENT ON COLUMN ytkp.comment_section.insert_date IS 'Date of insertion of the comment to the database';
+-- Add comments for functions
+COMMENT ON FUNCTION ytkp.find_video_id(_video_yt_id TEXT) IS 'Find the corresponding Video ID based on video_yt_id';
