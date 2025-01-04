@@ -54,20 +54,35 @@ CREATE TABLE ytkp.video (
     scrape_date TIMESTAMP DEFAULT '1970-01-01 00:00:00' NOT NULL
 );
 
--- Create functions for triggers in the video table
+-- Create triggers for the video table
 CREATE FUNCTION ytkp.extract_vid_id_from_url() RETURNS TRIGGER AS $$
     BEGIN
         NEW.video_yt_id := RIGHT(NEW.video_url, 11);
         RETURN NEW;
     END;
-$$ LANGUAGE PLPGSQL;
-
--- Create triggers in the video table
+$$ LANGUAGE plpgsql;
 CREATE TRIGGER insert_yt_id
     BEFORE INSERT
     ON ytkp.video
     FOR EACH ROW
     EXECUTE FUNCTION ytkp.extract_vid_id_from_url();
+
+-- Create functions for the video table
+CREATE FUNCTION ytkp.find_channel_id(_channel_name TEXT) RETURNS INT AS $$
+    DECLARE
+        _channel_id INT;
+    BEGIN
+        SELECT channel_id INTO _channel_id
+        FROM ytkp.channel
+        WHERE channel_name = _channel_name;
+
+        IF NOT FOUND THEN
+            RETURN NULL;
+        END IF;
+
+        RETURN _channel_id;
+    END;
+$$ LANGUAGE plpgsql;
 
 -- Add comments for the video table and its columns
 COMMENT ON TABLE ytkp.video IS 'Table containing video information';
@@ -82,10 +97,11 @@ COMMENT ON COLUMN ytkp.video.video_description IS 'Description of the video';
 COMMENT ON COLUMN ytkp.video.upload_date IS 'Original upload date of the video';
 COMMENT ON COLUMN ytkp.video.insert_date IS 'Timestamp of row insertion';
 COMMENT ON COLUMN ytkp.video.scrape_date IS 'Timestamp of the last time the video was scraped for data (comments, description, transcript)';
--- Add comments for functions
-COMMENT ON FUNCTION ytkp.extract_vid_id_from_url() IS 'Function for a trigger; Extract last 11 characters from video url to obtain YouTube ID';
 -- Add comments for triggers
+COMMENT ON FUNCTION ytkp.extract_vid_id_from_url() IS 'Function for a trigger; Extract last 11 characters from video url to obtain YouTube ID';
 COMMENT ON TRIGGER insert_yt_id ON ytkp.video IS 'Trigger to insert video_yt_id based on video_url';
+-- Add comments for functions
+COMMENT ON FUNCTION ytkp.find_channel_id(_channel_name TEXT) IS 'Find the corresponding Channel ID based on channel_name';
 
 
 -- Create the comment table
