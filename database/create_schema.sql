@@ -110,7 +110,6 @@ CREATE TABLE ytkp.comment_section (
     comment_yt_id TEXT NOT NULL,
     comment_yt_parent TEXT NOT NULL,
     video_id INT REFERENCES ytkp.video(video_id),
-   -- channel_id INT REFERENCES ytkp.channel(channel_id),
     user_name TEXT,
     comment_text TEXT,
     like_count INT NOT NULL,
@@ -154,3 +153,57 @@ COMMENT ON COLUMN ytkp.comment_section.comment_date IS 'Original submit date of 
 COMMENT ON COLUMN ytkp.comment_section.insert_date IS 'Date of insertion of the comment to the database';
 -- Add comments for functions
 COMMENT ON FUNCTION ytkp.find_video_id(_video_yt_id TEXT) IS 'Find the corresponding Video ID based on video_yt_id';
+
+
+-- Create the video transcript table
+CREATE TABLE ytkp.video_transcript (
+    id SERIAL PRIMARY KEY,
+    video_id INT REFERENCES ytkp.video(video_id),
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    is_sponsorblocked BOOLEAN DEFAULT false NOT NULL
+);
+
+-- Add comments on the transcript table and its columns
+COMMENT ON TABLE ytkp.video_transcript IS 'Table containing transcripts of the videos as they appear in the transcript file (sliced into chunks with start and end times';
+COMMENT ON COLUMN ytkp.video_transcript.id IS 'Unique identifier for each entry; not really used aside from being a PRIMARY KEY';
+COMMENT ON COLUMN ytkp.video_transcript.video_id IS 'ID of the video that the transcript relates to';
+COMMENT ON COLUMN ytkp.video_transcript.start_time IS 'Start time of the transcribed chunk';
+COMMENT ON COLUMN ytkp.video_transcript.end_time IS 'End time of the transcribed chunk';
+COMMENT ON COLUMN ytkp.video_transcript.is_sponsorblocked IS 'Flag to differentiate sponsored chunks of the transcript and non-sponsored';
+
+
+-- Create the sponsorblock timestamp table
+CREATE TABLE ytkp.sponsorblock (
+    id SERIAL PRIMARY KEY,
+    video_id INT REFERENCES ytkp.video(video_id),
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL
+);
+
+-- Create triggers for the sponsorblock table
+CREATE FUNCTION ytkp.update_sponsorblocked_chunks() RETURNS TRIGGER AS $$
+    BEGIN
+        UPDATE ytkp.video_transcript
+        SET is_sponsorblocked = true
+        WHERE 1=1
+            AND end_time >= NEW.start_time
+            AND start_time <= NEW.end_time;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER insert_is_sponsorblocked
+    AFTER INSERT
+    ON ytkp.sponsorblock
+    FOR EACH ROW
+    EXECUTE FUNCTION ytkp.update_sponsorblocked_chunks();
+
+-- Add comments for the sponsorblock table and its columns
+COMMENT ON TABLE ytkp.sponsorblock IS 'Table containing information about sponsored (or otherwise useless) parts of the video';
+COMMENT ON COLUMN ytkp.sponsorblock.id IS 'Unique identifier for each entry; not really used aside from being a PRIMARY KEY';
+COMMENT ON COLUMN ytkp.sponsorblock.video_id IS 'ID of the video that has a sponsored part';
+COMMENT ON COLUMN ytkp.sponsorblock.start_time IS 'Start time of the sponsored segment in the video';
+COMMENT ON COLUMN ytkp.sponsorblock.end_time IS 'End time of the sponsored segment in the video';
+-- Add comments for triggers
+COMMENT ON FUNCTION ytkp.update_sponsorblocked_chunks() IS 'Function for a trigger; Set is_sponsorblocked flag into ytkp.video_transcript';
+COMMENT ON TRIGGER insert_is_sponsorblocked ON ytkp.sponsorblock IS 'Trigger to set video_transcript.is_sponsorblocked flag when inserting into ytkp.sponsorblock';
