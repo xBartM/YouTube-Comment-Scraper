@@ -37,8 +37,8 @@ jq \
      "SET channel_id = ytkp.find_channel_id('\''", .uploader_id, "'\'') ",
        ", video_avail = '\''", .availability, "'\'' ",
        ", video_lang = '\''", .language, "'\'' ",
-       ", video_name = '\''", .title, "'\'' ",
-       ", video_description = '\''", .description, "'\'' ",
+       ", video_name = '\''", (.title | gsub("'\''";"'\'''\''")), "'\'' ",
+       ", video_description = '\''", (.description | gsub("'\''";"'\'''\''")), "'\'' ",
        ", upload_date = '\''", .upload_date, "'\'' ",
        ", scrape_date = CURRENT_TIMESTAMP ",
      "WHERE video_yt_id = '\''", .id, "'\'';"] | add)' \
@@ -76,6 +76,8 @@ psql \
   --file=${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # do some things with video transcript so it's readable
+# actually here just insert into sponsorblock
+# SO do it AFTER inserting transcript!
 error()
 
 # move data files from temp dir to archive for storage
