@@ -52,11 +52,11 @@ jq \
        "comment_yt_id, comment_yt_parent, video_id, user_name, comment_text",
        ", like_count, is_verified, is_favourited, is_pinned, comment_date",
      ") VALUES ",
-    ([.comments[] |
+    ([.comments[] + {vid_id: .id} |
      [
        "('\''", .id, "'\'' ",
        ", '\''", .parent, "'\'' ",
-       ", ytkp.find_video_id('\''", .id, "'\'') ",
+       ", ytkp.find_video_id('\''", .vid_id, "'\'') ",
        ", '\''", .author, "'\'' ",
        ", '\''", (.text | gsub("'\''";"'\'''\''")), "'\'' ",
        ", ", .like_count, " ",
