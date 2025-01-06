@@ -161,6 +161,7 @@ CREATE TABLE ytkp.video_transcript (
     video_id INT REFERENCES ytkp.video(video_id),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
+    transcript_text TEXT,
     is_sponsorblocked BOOLEAN DEFAULT false NOT NULL
 );
 
@@ -170,6 +171,7 @@ COMMENT ON COLUMN ytkp.video_transcript.id IS 'Unique identifier for each entry;
 COMMENT ON COLUMN ytkp.video_transcript.video_id IS 'ID of the video that the transcript relates to';
 COMMENT ON COLUMN ytkp.video_transcript.start_time IS 'Start time of the transcribed chunk';
 COMMENT ON COLUMN ytkp.video_transcript.end_time IS 'End time of the transcribed chunk';
+COMMENT ON COLUMN ytkp.video_transcript.transcript_text IS 'Transcript text chunk from VTT sub file';
 COMMENT ON COLUMN ytkp.video_transcript.is_sponsorblocked IS 'Flag to differentiate sponsored chunks of the transcript and non-sponsored';
 
 
