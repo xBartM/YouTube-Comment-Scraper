@@ -36,6 +36,9 @@ fi
 # split the db_video variable to video ID and video URL for use later
 db_video_id=${db_video%|*}
 db_video_url=${db_video#*|}
+# find data file names
+vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1)
+vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1)
 
 # download the metadata along with the comments
 yt-dlp \
@@ -54,7 +57,7 @@ jq \
        ", upload_date = '\''", .upload_date, "'\'' ",
        ", scrape_date = CURRENT_TIMESTAMP ",
      "WHERE video_yt_id = '\''", .id, "'\'';"] | add)' \
-  ${YTKP_DIR}/archive/temp/*info.json \
+  ${vid_data} \
   > ${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # append INSERT comment_section data DML script to existing file (from above)
@@ -78,7 +81,7 @@ jq \
        ", to_timestamp(", .timestamp, "))"
      ] | join("")
     ] | join(",\n") + ";")] | join(""))' \
-  ${YTKP_DIR}/archive/temp/*info.json \
+  ${vid_data} \
   >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # append INSERT video_transcript data DML script to existing file (from above)
@@ -112,7 +115,7 @@ awk -v vid_id="$db_video_id" \
       # Print the final SQL statement
       print sql ";"
   }'\
-  ${YTKP_DIR}/archive/temp/*vtt \
+  ${vid_transcript} \
   >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # append INSERT sponsorblock data DML script to existing file (from above)
@@ -128,7 +131,7 @@ jq \
        ", make_interval(secs => ", .end_time, ")::TIME)"
      ] | join("")
     ] | join(",\n") + ";")] | join(""))' \
-  ${YTKP_DIR}/archive/temp/*info.json \
+  ${vid_data} \
   >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # update video data, add comments, add transcript and add sponsorblock data
@@ -139,8 +142,8 @@ psql \
 
 # move data files from temp dir to archive for storage
 mv \
-  ${YTKP_DIR}/archive/temp/*info.json \
-  ${YTKP_DIR}/archive/temp/*vtt \
+  ${vid_data} \
+  ${vid_transcript} \
   ${YTKP_DIR}/archive/
 
 # remove temp files
