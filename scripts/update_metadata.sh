@@ -36,14 +36,15 @@ fi
 # split the db_video variable to video ID and video URL for use later
 db_video_id=${db_video%|*}
 db_video_url=${db_video#*|}
-# find data file names
-vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1)
-vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1)
 
 # download the metadata along with the comments
 yt-dlp \
   --config-locations ./configs/dl-texts.conf \
   "${db_video_url}"
+
+# find data file names
+vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1)
+vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1)
 
 # create UPDATE video data DML script
 jq \
@@ -85,38 +86,43 @@ jq \
   >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
 
 # append INSERT video_transcript data DML script to existing file (from above)
-awk -v vid_id="$db_video_id" \
-  'BEGIN {
-       # Initialize the SQL statement
-       sql = "INSERT INTO ytkp.video_transcript\n(video_id, start_time, end_time, transcript_text) VALUES\n"
-       first_entry = 1
-  }
+# check if there is work to do
+if [ -n "${vid_transcript}" ] ; then
 
-  # Match lines with timestamps
-  /^([0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}) --> ([0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3})/ {
-      if (!first_entry) {
-          sql = sql ",\n"
+    awk -v vid_id="$db_video_id" \
+      'BEGIN {
+           # Initialize the SQL statement
+           sql = "INSERT INTO ytkp.video_transcript\n(video_id, start_time, end_time, transcript_text) VALUES\n"
+           first_entry = 1
       }
-      start_time = $1
-      end_time = $3
-      getline # Read the next line for transcript text
-      transcript_text = $0
 
-      # Replace single quotes with two single quotes in transcript_text
-      gsub("'\''", "'\'''\''", transcript_text)
+      # Match lines with timestamps
+      /^([0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}) --> ([0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3})/ {
+          if (!first_entry) {
+              sql = sql ",\n"
+          }
+          start_time = $1
+          end_time = $3
+          getline # Read the next line for transcript text
+          transcript_text = $0
 
-      # Append the values to the SQL statement
-      sql = sql "(" vid_id ", '\''" start_time "'\'', '\''" end_time "'\'', '\''" transcript_text "'\'')"
+          # Replace single quotes with two single quotes in transcript_text
+          gsub("'\''", "'\'''\''", transcript_text)
 
-      first_entry = 0
-  }
+          # Append the values to the SQL statement
+          sql = sql "(" vid_id ", '\''" start_time "'\'', '\''" end_time "'\'', '\''" transcript_text "'\'')"
 
-  END {
-      # Print the final SQL statement
-      print sql ";"
-  }'\
-  ${vid_transcript} \
-  >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+          first_entry = 0
+      }
+
+      END {
+          # Print the final SQL statement
+          print sql ";"
+      }'\
+      ${vid_transcript} \
+      >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+
+fi
 
 # append INSERT sponsorblock data DML script to existing file (from above)
 jq \
@@ -143,8 +149,12 @@ psql \
 # move data files from temp dir to archive for storage
 mv \
   ${vid_data} \
-  ${vid_transcript} \
   ${YTKP_DIR}/archive/
+if [ -n "${vid_transcript}" ] ; then
+    mv \
+      ${vid_transcript} \
+      ${YTKP_DIR}/archive/
+fi
 
 # remove temp files
 rm ${YTKP_DIR}/database/temp/db_insert_video_data.sql
