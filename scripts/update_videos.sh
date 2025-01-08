@@ -47,6 +47,12 @@ yt-dlp \
   --print-to-file url ${YTKP_DIR}/archive/temp/video_urls.txt \
   --batch-file ${YTKP_DIR}/archive/temp/playlist_urls.txt
 
+# remove shorts
+awk \
+  '!/shorts/' \
+  ${YTKP_DIR}/archive/temp/video_urls.txt \
+  > ${YTKP_DIR}/archive/temp/video_urls.txt
+
 # sort and remove duplicates from the list of videos
 sort \
   --unique \
