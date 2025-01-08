@@ -43,8 +43,8 @@ yt-dlp \
   "${db_video_url}"
 
 # find data file names. we don't care about errors
-vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1) 2>/dev/null
-vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1) 2>/dev/null
+vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | tail -1) 2>/dev/null
+vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | tail -1) 2>/dev/null
 
 # create UPDATE video data DML script
 jq \
