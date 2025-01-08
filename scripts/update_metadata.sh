@@ -29,7 +29,7 @@ db_video=$( \
 
 # check if there is work to do
 if [ -z "${db_video}" ] ; then
-    echo "${0##*/}: no work to do. exitting"
+    echo "${0##*/}: no work to do. exiting"
     exit 1
 fi
 
@@ -45,6 +45,12 @@ yt-dlp \
 # find data file names. we don't care about errors
 vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | tail -1) 2>/dev/null
 vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | tail -1) 2>/dev/null
+
+# check if yt-dlp wrote anything
+if [ ! -s ${vid_data} ]; then
+    echo "${0##*/}: might\'ve been banned by YT. exiting"
+    exit 1
+fi
 
 # create UPDATE video data DML script
 jq \

@@ -25,7 +25,7 @@ db_channel=$( \
 
 # check if there is work to do
 if [ -z "${db_channel}" ] ; then
-    echo "${0##*/}: no work to do. exitting"
+    echo "${0##*/}: no work to do. exiting"
     exit 1
 fi
 
@@ -46,6 +46,12 @@ yt-dlp \
   --config-locations ${YTKP_DIR}/configs/dl-urls.conf \
   --print-to-file url ${YTKP_DIR}/archive/temp/video_urls.txt \
   --batch-file ${YTKP_DIR}/archive/temp/playlist_urls.txt
+
+# check if yt-dlp wrote anything
+if [ ! -s ${YTKP_DIR}/archive/temp/video_urls.txt ]; then
+    echo "${0##*/}: might\'ve been banned by YT. exiting"
+    exit 1
+fi
 
 # remove shorts. write to temp file and then mv back to the original file
 awk \
