@@ -42,9 +42,9 @@ yt-dlp \
   --config-locations ./configs/dl-texts.conf \
   "${db_video_url}"
 
-# find data file names
-vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1)
-vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1)
+# find data file names. we don't care about errors
+vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | head -1) 2>/dev/null
+vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | head -1) 2>/dev/null
 
 # create UPDATE video data DML script
 jq \
