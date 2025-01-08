@@ -12,7 +12,7 @@ if [ -z "${YTKP_DIR}" ] ; then
     exit 1
 fi
 
-# get a list of all channels (URLs) from channel table. It is guaranteed to be unique
+# get a list of all channels (URLs) from channel table
 psql \
  --dbname=postgres \
  --tuples-only \
