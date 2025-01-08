@@ -59,9 +59,9 @@ jq \
        ", scrape_date = CURRENT_TIMESTAMP ",
      "WHERE video_yt_id = '\''", .id, "'\'';"] | add)' \
   ${vid_data} \
-  > ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+  > ${YTKP_DIR}/database/temp/db_update_video_data.sql
 
-# append INSERT comment_section data DML script to existing file (from above)
+# create INSERT comment_section data DML script
 jq \
   --raw-output \
   '(["INSERT INTO ytkp.comment_section (",
@@ -83,9 +83,9 @@ jq \
      ] | join("")
     ] | join(",\n") + ";")] | join(""))' \
   ${vid_data} \
-  >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+  > ${YTKP_DIR}/database/temp/db_insert_comment_data.sql
 
-# append INSERT video_transcript data DML script to existing file (from above)
+# create INSERT video_transcript data DML script
 # check if there is work to do
 if [ -n "${vid_transcript}" ] ; then
 
@@ -120,11 +120,11 @@ if [ -n "${vid_transcript}" ] ; then
           print sql ";"
       }'\
       ${vid_transcript} \
-      >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+      > ${YTKP_DIR}/database/temp/db_insert_transcript_data.sql
 
 fi
 
-# append INSERT sponsorblock data DML script to existing file (from above)
+# create INSERT sponsorblock data DML script
 jq \
   --raw-output \
   '(["INSERT INTO ytkp.sponsorblock (",
@@ -138,13 +138,17 @@ jq \
      ] | join("")
     ] | join(",\n") + ";")] | join(""))' \
   ${vid_data} \
-  >> ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+  > ${YTKP_DIR}/database/temp/db_insert_sponsorblock_data.sql
 
 # update video data, add comments, add transcript and add sponsorblock data
+# doesn' matter if insert transcript exists nor if sponsorblock is properly created
 psql \
   --dbname=postgres \
   --quiet \
-  --file=${YTKP_DIR}/database/temp/db_insert_video_data.sql
+  --file=${YTKP_DIR}/database/temp/db_update_video_data.sql \
+  --file=${YTKP_DIR}/database/temp/db_insert_comment_data.sql \
+  --file=${YTKP_DIR}/database/temp/db_insert_transcript_data.sql \
+  --file=${YTKP_DIR}/database/temp/db_insert_sponsorblock_data.sql
 
 # move data files from temp dir to archive for storage
 mv \
@@ -157,4 +161,7 @@ if [ -n "${vid_transcript}" ] ; then
 fi
 
 # remove temp files
-rm ${YTKP_DIR}/database/temp/db_insert_video_data.sql
+rm ${YTKP_DIR}/database/temp/db_update_video_data.sql
+rm ${YTKP_DIR}/database/temp/db_insert_comment_data.sql
+rm -f ${YTKP_DIR}/database/temp/db_insert_transcript_data.sql # this file might not exist
+rm ${YTKP_DIR}/database/temp/db_insert_sponsorblock_data.sql
