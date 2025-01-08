@@ -62,7 +62,7 @@ sort \
 
 # create INSERT INTO .sql with ON CONFLICT clause
 awk \
-  '{ print "INSERT INTO ytkp.video (video_url) VALUES (\x27"$0"\x27) ON CONFLICT (video_url) DO NOTHING;" }' \
+  '{ print "INSERT INTO ytkp.video (video_url) VALUES (\047"$0"\047) ON CONFLICT (video_url) DO NOTHING;" }' \
   ${YTKP_DIR}/archive/temp/video_urls.txt \
   > ${YTKP_DIR}/database/temp/db_video_urls_insert.sql
 

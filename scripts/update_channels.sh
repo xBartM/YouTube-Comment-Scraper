@@ -48,13 +48,13 @@ comm \
 
 # create INSERT INTO .sql
 awk \
- '{ print "INSERT INTO ytkp.channel (channel_url) VALUES (\x27"$0"\x27);" }' \
+ '{ print "INSERT INTO ytkp.channel (channel_url) VALUES (\047"$0"\047);" }' \
  ${YTKP_DIR}/database/temp/db_channels_insert.txt \
  > ${YTKP_DIR}/database/temp/db_channels_insert.sql
 
 # create DELETE FROM .sql
 awk \
- '{ print "DELETE FROM ytkp.channel WHERE channel_url = \x27"$0"\x27;" }' \
+ '{ print "DELETE FROM ytkp.channel WHERE channel_url = \047"$0"\047;" }' \
  ${YTKP_DIR}/database/temp/db_channels_delete.txt \
  > ${YTKP_DIR}/database/temp/db_channels_delete.sql
 
