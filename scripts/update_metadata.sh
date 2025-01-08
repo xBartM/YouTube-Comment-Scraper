@@ -130,7 +130,7 @@ jq \
   '(["INSERT INTO ytkp.sponsorblock (",
        "video_id, start_time, end_time",
      ") VALUES ",
-    ([.sponsorblock_chapters[] + {vid_id: .id} |
+    ([(.sponsorblock_chapters[] | select(contains({type: "skip"}))) + {vid_id: .id} |
      [
        "(ytkp.find_video_id('\''", .vid_id, "'\'') ",
        ", make_interval(secs => ", .start_time, ")::TIME ",
@@ -152,13 +152,8 @@ psql \
 
 # move data files from temp dir to archive for storage
 mv \
-  ${vid_data} \
+  ${YTKP_DIR}/archive/temp/* \
   ${YTKP_DIR}/archive/
-if [ -n "${vid_transcript}" ] ; then
-    mv \
-      ${vid_transcript} \
-      ${YTKP_DIR}/archive/
-fi
 
 # remove temp files
 rm ${YTKP_DIR}/database/temp/db_update_video_data.sql
