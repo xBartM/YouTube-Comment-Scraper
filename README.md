@@ -68,8 +68,8 @@ This repo requires the following software:
 	mkdir archive archive/temp database/logs database/temp
 	```
 4. Finish setting up PostgreSQL:
-> [!WARNING]  
-> termux exclusive! Other systems may vary!
+	> [!WARNING]  
+	> This step is termux exclusive! Other systems may vary!
 	
 	1. Run `scripts/db_init.sh` to create a skeleton database.
 	2. Run `scripts/db_start.sh` to start the PostgreSQL server.
