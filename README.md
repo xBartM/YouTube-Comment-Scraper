@@ -19,7 +19,7 @@ This repository allows you to download YouTube video data (comments, description
 ### Repo structure
 
 > [!NOTE]  
-> Every file contains extensive comments to help with understanding what the code's functionality and purpose.
+> Each file contains extensive comments to help understand the functionality and purpose of the code.
 
 The repository is structured as follows:
 
@@ -88,7 +88,7 @@ You can use this repository in two ways:
 ### Channel Scrape
 
 > [!NOTE]  
-> This tool looks at the videos from `/videos` tab AND goes through all `/playlists`. Videos from other channels may inadvertentl enter the dataset.
+> This tool looks at the videos from `/videos` tab AND goes through all `/playlists`. Videos from other channels may inadvertently enter the dataset.
 
 > [!NOTE]  
 > `/shorts` are not scraped.
@@ -102,7 +102,7 @@ You can use this repository in two ways:
 	> Removing a channel from the `channels.txt` file and running this script will remove that channel from the database (video data will persist but without the knowledge of the channel).
 3. Run the `scripts/update_videos.sh` script to fetch video URLs for the top channel.
 	> [!NOTE]  
-	> This script runs for the top channel from the DB sorted by `scrape_date asc` and `insert_date asc`. Multiple passes of this script are necessary for scraping multiple channels.
+	> This script runs for the top channel from the DB sorted by `scrape_date asc` and `insert_date asc`. Multiple passes of this script are necessary to scrape multiple channels.
 	
 	> [!TIP]  
 	> You can run this script in a loop until it exits with an error, e.g.:  
@@ -129,7 +129,7 @@ You can use this repository in two ways:
 
 1. Run the `scripts/update_metadata.sh` script to download comments, description and transcript for the top video in the database.
 	> [!NOTE]  
-	> This script runs for the top video from the DB sorted by `scrape_date asc` and `insert_date asc`. Multiple passes of this script are necessary for scraping multiple videos.
+	> This script runs for the top video from the DB sorted by `scrape_date asc` and `insert_date asc`. Multiple passes of this script are necessary to scrape multiple videos.
 	
 	> [!TIP]  
 	> You can run this script in a loop until it exits with an error, e.g.:  
@@ -140,7 +140,7 @@ You can use this repository in two ways:
 ## Endnotes
 
 * next time, use a higher-level language (ex. Python) as it would save SIGNIFICANT amount of time and enhance portability;
-* next time, dump all data into the database firts and then select what's important (this saves time during development and allows for an access to other data if the need arises);
+* next time, dump all data into the database first and then select what's important (this saves time during development and allows for an access to other data if the need arises);
 * next time, start with a `README.md` and/or a documentation;
 * next time, write tests and add debugging options;
 * next time, utilise more tools than just an emulated terminal window with `nano` :)
@@ -161,6 +161,6 @@ YTKP stands for YouTube Knowledge Project. I started developing it for multiple 
 	3. This all in turn can provide data about the agenda of parties interested in such practices. Ex:
 		1. pushing multiple videos across various channels as a PR stunt to get goodwill after scandals.
 		2. disseminating political propaganda on both local and global level.
-		3. focusing on certain news while ignoring others to drive their (or their payers') agenda.
+		3. focusing on certain news while ignoring other to drive their own (or their payers') agenda.
 		4. many, many more use cases exist.
 	4. Comments (probably) being mostly written by bought bots can shed some more light on the sentiment that someone is trying to force upon the target audience.
