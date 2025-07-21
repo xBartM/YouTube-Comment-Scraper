@@ -61,7 +61,7 @@ This repo requires the following software:
 		```
 	3. (Optional) update and reload `~/.bashrc` so you don't have to repeat these steps each time you open the terminal:
 		```
-		echo "export YTKP_DIR=${YTKP_DIR}" >> ~/.bashrc && source ~/.bashrc
+		echo "export YTKP_DIR=$(pwd)" >> ~/.bashrc && source ~/.bashrc
 		```
 3. Create necessary folders:
 	```

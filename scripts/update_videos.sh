@@ -20,7 +20,7 @@ db_channel=$( \
     --dbname=postgres \
     --tuples-only \
     --no-align \
-    --command="SELECT channel_url FROM ytkp.channel WHERE scrape_date < NOW() - INTERVAL '30 days' ORDER BY scrape_date ASC, insert_date ASC LIMIT 1;"
+    --command="SELECT channel_url FROM ytkp.channel WHERE scrape_date < NOW() - INTERVAL '7 days' ORDER BY scrape_date ASC, insert_date ASC LIMIT 1;"
 )
 
 # check if there is work to do

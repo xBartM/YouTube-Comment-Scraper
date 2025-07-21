@@ -41,16 +41,21 @@ db_video_url=${db_video#*|}
 yt-dlp \
   --config-locations ./configs/dl-texts.conf \
   "${db_video_url}"
+yt_dlp_status=$?
+
+# check if yt-dlp wrote anything
+if [ $yt_dlp_status -ne 0 ]; then
+    echo "${0##*/}: might\'ve been banned by YT, or video is private. bumping scrape_date and exiting"
+    psql \
+      --dbname=postgres \
+      --quiet \
+      --command="UPDATE ytkp.video SET scrape_date = scrape_date + INTERVAL '1 day' WHERE video_id = '${db_video_id}';"
+    exit 1
+fi
 
 # find data file names. we don't care about errors
 vid_data=$(ls ${YTKP_DIR}/archive/temp/*info.json | tail -1) 2>/dev/null
 vid_transcript=$(ls ${YTKP_DIR}/archive/temp/*vtt | tail -1) 2>/dev/null
-
-# check if yt-dlp wrote anything
-if [ ! -s ${vid_data} ]; then
-    echo "${0##*/}: might\'ve been banned by YT. exiting"
-    exit 1
-fi
 
 # create UPDATE video data DML script
 jq \
